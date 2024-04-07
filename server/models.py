@@ -15,6 +15,10 @@ class Restaurant(db.Model, SerializerMixin):
     name = db.Column(db.String(50), unique=True)
     address = db.Column(db.String, nullable=False)
     
+    # Relationship mapping the restaurant to related restaurant_pizza
+    restaurant_pizzas = db.relationship(
+            'RestaurantPizza', back_populates='restaurant', cascade='all, delete-orphan')
+    
     def __repr__(self):
         return f'<Restaurant {self.id}, {self.name}, {self.address}>'
 
@@ -24,6 +28,10 @@ class Pizza(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     ingredients = db.Column(db.String, nullable=False)
+    
+    # Relationship mapping the Pizza to related restaurant_pizza
+    restaurant_pizzas = db.relationship(
+            'RestaurantPizza', back_populates='pizza', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f'<Pizza {self.id}, {self.name}, {self.ingredients}>'
@@ -35,6 +43,12 @@ class RestaurantPizza(db.Model, SerializerMixin):
     price = db.Column(db.Float, nullable=False)
     pizza_id = db.Column(db.Integer, db.ForeignKey('pizzas.id'), nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False)
+    
+    #Relationship mapping the restaurant_pizza to related restaurant
+    restaurant = db.relationship('Restaurant', back_populates='restaurant_pizzas')
+    
+    #Relationship mapping the restaurant_pizza to related pizza
+    pizza = db.relationship('Pizza', back_populates='restaurant_pizzas')
     
     def __repr__(self):
         return f'<RestaurantPizza {self.id}, {self.price}, {self.pizza_id}, {self.restaurant_id} >'
